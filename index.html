@@ -33,10 +33,10 @@ div.desc {
             <br><br>
             <label for="things">Subject</label>
             <select name="things" id="things" onchange="ThingItemUpdate(this.value)">
-                <option value="Cat">Cats</option>
-                <option value="Dog">Dogs</option>
-                <option value="Food">Food</option>
-                <option value="Flower">Flowers</option>
+                <option value="cat">Cats</option>
+                <option value="dog">Dogs</option>
+                <option value="food">Food</option>
+                <option value="flower">Flowers</option>
             </select>
     </p>
     <label for="refresh_rate">Refresh rate</label>
@@ -45,7 +45,7 @@ div.desc {
     
     <script type="text/javascript">
 
-    var things = ["Cat", "Dog", "Food", "Flower"];
+    var things = ["cat", "dog", "food", "flower"];
     var refresh_rate = 2;
 
     Refresh();
@@ -91,7 +91,6 @@ div.desc {
     }
     </script>
 
-
     <br><br>
 
     <div class="gallery">
@@ -103,17 +102,6 @@ div.desc {
         <a><img id="image2" src="cat-image-2.gif" border="1"
                 alt="cat-image-2.gif" />
         </a>
-    </div>
-
-    <p>
-    <!-- <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br> -->
-
-    <form action="https://formspree.io/f/{form_id}" method="post">
-        <label for="email">Your Email</label>
-        <input name="Email" id="email" type="email">
-        <button type="submit">Submit</button>
-    </form>
-    </p>
-    
+    </div>    
 </body>
 </html>
