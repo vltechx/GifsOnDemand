@@ -2,7 +2,7 @@
 <head>
 <style>
 div.gallery {
-  margin: 50px;
+  margin: 20px 150px 50px;
   border: 1px solid #ccc;
   float: left;
   width: 180px;
@@ -27,56 +27,78 @@ h1
 {
     font-family: sans-serif;
     text-align:center;
-    margin-top: 150px;
-    font-size: 150px;
+    margin-top: 50px;
+    font-size: 100px;
     font-weight: 800;
     color:transparent;
-    background-image:url(https://media.giphy.com/media/mEDQDUkeo9Dwbw3Br1/giphy.gif);
+    background-image: url(https://media.giphy.com/media/mEDQDUkeo9Dwbw3Br1/giphy.gif);
     background-position: center;
     -webkit-background-clip: text;
 }
+.topics
+{
+    width: 200px;
+    margin: 10px 0;
+    font-size: 20px;
+}
+form  { display: table;      }
+p     { display: table-row;  }
+label { display: table-cell; }
+input { display: table-cell; }
 
 
 </style>
 </head>
-<body>
+<body onload="InitData()">
 
     <h1>GIFs On Demand</h1>
 
     <form name="gallery" id="gallery" method="post" action="" id="FORM_ID">
         <p>
-            Please select a subject to load related GIFS at specified refresh rate.
-            <br><br>
-            <label for="things">Subject</label>
-            <select name="things" id="things" onchange="ThingItemUpdate(this.value)">
+            <label class="topics" for="things">Select GIF topic: </label>
+            <select class="topics" name="things" id="things" onchange="ThingItemUpdate(this.value)">
                 <option value="cat">Cats</option>
                 <option value="dog">Dogs</option>
                 <option value="food">Food</option>
                 <option value="flower">Flowers</option>
             </select>
-    </p>
-    <label for="refresh_rate">Refresh rate</label>
-    <input name="refresh_rate" id="refresh_rate" placeholder=2 onchange="updateRefreshRate(this.value)">
+        </p>
+        <p>
+            <label class="topics" for="refresh_rate">Refresh rate:</label>
+            <input class="topics" name="refresh_rate" id="refresh_rate" placeholder=2 onchange="updateRefreshRate(this.value)">
+        </p>
     </form>
     
     <script type="text/javascript">
 
     var things = ["cat", "dog", "food", "flower"];
-    var refresh_rate = 2;    
+    var refresh_rate, selThing;
 
-    Refresh();
+    function InitData()
+    {
+        selThing = sessionStorage.getItem("selThing");
+        if(selThing != null)
+            document.getElementById('things').value = selThing;
+        refresh_rate = sessionStorage.getItem("refresh_rate");
+        if(refresh_rate <= 0)
+            refresh_rate = 2;
+        document.getElementById("refresh_rate").placeholder = refresh_rate;
+        console.log("Inside InitData selThing is " + selThing);
+    }
 
     function updateRefreshRate(rate) 
     {
         if(rate <= 0)
-            rate = 2;        
+            rate = 2;
         refresh_rate = rate;
-        console.log("Refresh rate is updated to " + refresh_rate);
+        // localStorage stores withiout expiration
+        sessionStorage.setItem("refresh_rate", rate);
+        console.log("Refresh rate is updated to " + rate);
     }
 
     function Refresh()
     {
-        var selThing = document.getElementById('things').value;
+        selThing = document.getElementById('things').value;
         console.log("OnRefresh " + selThing + " rate is " + refresh_rate);
         setTimeout(Refresh, refresh_rate * 1000);
         changeImage(selThing);
@@ -84,9 +106,9 @@ h1
 
     function ThingItemUpdate(thing)
     {
-        selThing = thing;
-        console.log("On change thing " + selThing);
-        changeImage(selThing);
+        sessionStorage.setItem("selThing", thing);
+        console.log("On change thing " + thing);
+        changeImage(thing);
     }
 
     function shuffle(o)
@@ -120,26 +142,26 @@ h1
         <tr>
             <td>
                 <div class="gallery">
-                    <img id="image1" src="images/cat-image-1.gif" border="1" alt="cat-image-1.gif" width="600" height="400">
+                    <img id="image1" src="images/cat-image-1.gif" border="1" alt="cat-image-1.gif">
                 </div>
             </td>
             <td>
                 <div class="gallery">
-                    <img id="image2" src="images/cat-image-2.gif" border="1" alt="cat-image-2.gif" width="600" height="400">
+                    <img id="image2" src="images/cat-image-2.gif" border="1" alt="cat-image-2.gif">
                 </div>
             </td>
         </tr>
         <tr>
             <td>
-    <div class="gallery">
-        <img id="image3" src="images/cat-image-3.gif" border="1" alt="cat-image-3.gif"width="600" height="400">
-    </div>
-</td>
-<td>    
-    <div class="gallery">
-        <img id="image4" src="images/cat-image-4.gif" border="1" alt="cat-image-4.gif"width="600" height="400">
-    </div>
-</td>
-</tr>
+                <div class="gallery">
+                    <img id="image3" src="images/cat-image-3.gif" border="1" alt="cat-image-3.gif">
+                </div>
+            </td>
+            <td>
+                <div class="gallery">
+                    <img id="image4" src="images/cat-image-4.gif" border="1" alt="cat-image-4.gif">
+                </div>
+            </td>
+    </tr>
 </body>
 </html>
