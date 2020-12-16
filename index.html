@@ -2,31 +2,46 @@
 <html>
 <head>
 <style>
-div {
-  border: 1px solid black;
-  background-color: lightblue;
-  padding-top: 20px;
-  padding-right: 10px;
-  padding-bottom: 20px;
-  padding-left: 20px;
+
+.signup-form
+{
+  width: 300px;
+  box-shadow: 0 0 3px 0 rgba(0,0,0,0.3);
+  background: #fff;
+  padding: 20px;
+  margin: 8% auto 0;
+  text-align: center;
 }
+.signup-form h1
+{
+  color: #1c8adb;
+  margin-bottom: 30px;
+}
+.input-box
+{
+  border-radius: 20px;
+  padding: 10px;
+  margin: 10px 0;
+  width: 80%;
+  border: 1px solid;
+  outline: none;
+}
+
 </style>
 </head>
 <body>
+  <h1 style="text-align:center">Welcome to GIFsOnDemand</h1>
 
-<h2>SignUp/SignIn For GIFsOnDemand</h2>
+  <div class="signup-form">
+    <h1>Sign Up</h1>
+    <form action="https://api.scriptrapps.io/gifsondemand/auth?auth_token=RzE3ODBBRUI2OA==" method="post">
 
-<form action="https://api.scriptrapps.io/gifsondemand/auth?auth_token=RzE3ODBBRUI2OA==" method="post">
-  <div>
-      <label for="email">Email:</label><br>
-      <input type="text" id="email" name="email" value="" required>
-      <br><br>
-      <label for="psw"><b>Password:</b></label><br>
-      <input type="password" placeholder="Enter Password" name="psw" required><br>
-      <br>
-      <button type="submit">Submit</button>
-    </div>
-</form>
+          <input type="email" class="input-box" placeholder="Enter email"  id="email" name="email" value="" required>
+          <input type="password" class="input-box" placeholder="Enter Password" name="psw" required>
+          <p><input type="checkbox" required>I agree to the terms of services</p>
+          <button class="input-box" type="submit">Submit</button>
+    </form>
+  </div>
  
 </body>
 </html>

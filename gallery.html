@@ -7,25 +7,41 @@ div.gallery {
   float: left;
   width: 180px;
 }
-
 div.gallery:hover {
   border: 1px solid #777;
 }
-
 div.gallery img {
   width: 100%;
   height: auto;
 }
-
 div.desc {
   padding: 15px;
   text-align: center;
 }
+.table td
+{
+    align-self: center;
+    vertical-align: center;
+}
+h1
+{
+    font-family: sans-serif;
+    text-align:center;
+    margin-top: 150px;
+    font-size: 150px;
+    font-weight: 800;
+    color:transparent;
+    background-image:url(https://media.giphy.com/media/mEDQDUkeo9Dwbw3Br1/giphy.gif);
+    background-position: center;
+    -webkit-background-clip: text;
+}
+
+
 </style>
 </head>
 <body>
 
-    <h1>Welcome to GIFs on demand</h1>
+    <h1>GIFs On Demand</h1>
 
     <form name="gallery" id="gallery" method="post" action="" id="FORM_ID">
         <p>
@@ -100,18 +116,30 @@ div.desc {
     </script>
 
     <br><br>
-
-    <div class="gallery">
-        <img id="image1" src="images/cat-image-1.gif" border="1" alt="cat-image-1.gif" width="600" height="400">
-    </div>
-    <div class="gallery">
-        <img id="image2" src="images/cat-image-2.gif" border="1" alt="cat-image-2.gif"width="600" height="400">
-    </div>
+    <table  class="table">
+        <tr>
+            <td>
+                <div class="gallery">
+                    <img id="image1" src="images/cat-image-1.gif" border="1" alt="cat-image-1.gif" width="600" height="400">
+                </div>
+            </td>
+            <td>
+                <div class="gallery">
+                    <img id="image2" src="images/cat-image-2.gif" border="1" alt="cat-image-2.gif" width="600" height="400">
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
     <div class="gallery">
         <img id="image3" src="images/cat-image-3.gif" border="1" alt="cat-image-3.gif"width="600" height="400">
     </div>
+</td>
+<td>    
     <div class="gallery">
         <img id="image4" src="images/cat-image-4.gif" border="1" alt="cat-image-4.gif"width="600" height="400">
-    </div>    
+    </div>
+</td>
+</tr>
 </body>
 </html>
