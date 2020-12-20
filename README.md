@@ -8,3 +8,5 @@ A Web Application developed to learn basic web application development on static
 - Integrating with external APIs or libraries
 - Implementing a scheduling mechanism
 - Some UI development
+
+Site is published at https://vltechx.github.io/GifsOnDemand
