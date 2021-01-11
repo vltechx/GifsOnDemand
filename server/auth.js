@@ -11,6 +11,7 @@
  */
 var http = require ("http");
 var utils = require("/util/util");
+var cryptomd5 = require("modules/encrypt/md5_min.js");
 
 const user_status =
 {
@@ -25,6 +26,8 @@ const user_status =
 var email = request.parameters.email;
 var psw = request.parameters.psw;
 var token = request.parameters.token;
+
+log.debug("email & psw  " + email + " " + psw);
 
 var message;
 var html = "<html>\
@@ -70,38 +73,55 @@ function processCurrentUser()
         
         message = "<h2>" + header + "</h2><br><br><div class=\"center\">" + "Email address(" + email + ") has been added to an account on GIFsOnDemand." + "<br>You must verify email by clicking \"Verify Email\" button before using this site."+ "</div>";
 
-        var activateButton ="<input type=\"button\" onclick=\"location.href='https://api.scriptrapps.io/gifsondemand/auth?auth_token=RzE3ODBBRUI2OA==&token="+
-                            newToken + "&email=" + email + "';\" value=\"Verify Email\"/>";
+        var url = "https://api.scriptrapps.io/gifsondemand/auth?auth_token=RzE3ODBBRUI2OA==&token="+ newToken + "&email=" + email;
+        var activateButton ="<input type=\"button\" onclick=\"location.href='" + url + "';\" value=\"Verify Email\"/>";
         html += message + "<div class=\"center\">" + activateButton + "</div>" + "</body></html>";
+        
+        verifyAccount(url);
     }
-    else if(status == user_status.USER_ACTIVATED)
+    else if((status == user_status.USER_ACTIVATED) || (status == user_status.EXISTING_USER))
     {
-        message = "<div class=\"center\">" + "Successfully activated account with the userid " + email +
+        var msg = "Successfully activated account with the userid ";
+        if(status == user_status.EXISTING_USER)
+            msg = "User authenticated with the userid &nbsp;"
+        var setToken = "localStorage.setItem(\"gifs_utoken\"" + ",\"" + token + "\"" + ");";
+        message = "<div class=\"center\">" + msg + email +
                 "<br>Redirecting to the site GifsOnDemand...</div>";
         message += "<script>setTimeout(function(){\
-                    location.href=\"https://vltechx.github.io/GifsOnDemand/gallery.html\"; }, 5000);</script>";
+                    location.href=\"https://vltechx.github.io/GifsOnDemand/gallery.html?redir\"; }, 5000);" + setToken + "</script>";
         html += message + "</body></html>";
-    }
-    else if(status == user_status.EXISTING_USER)
-    {
-        message = "<div class=\"center\">" + "User authenticated with the userid &nbsp;" + email +
-                "<br>Redirecting to the site GifsOnDemand...</div>";
-        message += "<script>setTimeout(function(){\
-                    location.href=\"https://vltechx.github.io/GifsOnDemand/gallery.html\"; }, 5000);</script>";
-        html += message + "</body></html>";      
     }
     else if(status == user_status.WRONG_PW)
     {
         message = "<div class=\"center\">" + "Wrong password entered, please enter the correct password." +
                 "<br>Redirecting to the site GifsOnDemand...</div>";
         message += "<script>setTimeout(function(){\
-                    location.href=\"https://vltechx.github.io/GifsOnDemand/index.html\"; }, 5000);</script>";
+                    location.href=\"https://vltechx.github.io/GifsOnDemand\"; }, 5000);</script>";
         html += message + "</body></html>";
     }
+    else if(status == user_status.NEED_REGISTRATION)
+    {
+        message = "<div class=\"center\">" + "You are not authorised to access this site, please sign up with valid email & passowrd." +
+                "<br>Redirecting to the site GifsOnDemand...</div>";
+        message += "<script>setTimeout(function(){\
+                    location.href=\"https://vltechx.github.io/GifsOnDemand\"; }, 5000);</script>";
+        html += message + "</body></html>";
+    }    
     response.write(html);
     // whenever you manipulate the response object make sure to add your CORS settings to the header
     response.addHeaders(configuration.crossDomainHeaders);
     response.close();
+}
+
+function verifyAccount(url)
+{
+    var KB  = {inline_keyboard:[[{text:"Activate GIFsOnDemand",url:url}]]};
+    KB = JSON.stringify(KB);
+    KB = encodeURIComponent(KB);
+    var msg = encodeURIComponent("Verify your GIFsOnDemand account");
+    msg += "&reply_markup=" + KB;
+    utils.telegram.sendMessageTeleTBot(879570902, msg, require("/config").TELBOTAPI);
+    return;
 }
 
 /**
@@ -121,7 +141,7 @@ function getFirebase()
 
 /**
  * Returns all users from database.
- * @return {{"token": newToken, "userid": email, "password": psw, "activated": false}[]} users       
+ * @return {Array} users       
  * 
  */
 function getAllUsers()
@@ -129,6 +149,23 @@ function getAllUsers()
 	var firebase = getFirebase();
     var users = firebase.getData("users");
     return users;
+}
+
+function isAuthorizedUser()
+{
+	var firebase = getFirebase();
+    var users = firebase.getData("users");
+    function getUserIndex(tk)
+    {
+      	return users.findIndex(function(users)
+        {
+            if(users)
+            	return users.token == tk;
+            return false;
+         });
+    }
+    var userIndex = getUserIndex(token);
+    return (userIndex >= 0);
 }
 
 /**
@@ -143,7 +180,15 @@ function getAllUsers()
  */
 function getCurrentUserStatus()
 {
-    var status = user_status.NEW_USER;
+    if(!email)
+    {
+        if(token && isAuthorizedUser())
+            return user_status.EXISTING_USER;
+        else
+        	return user_status.NEED_REGISTRATION;
+    }
+    
+  	var status = user_status.NEW_USER;
 	var users = getAllUsers();
     
     function getUserIndex(userid)
@@ -179,7 +224,8 @@ function getCurrentUserStatus()
         else if(curUser.activated == true)
         {
             log.info("curUser.activated - " + curUser.activated);
-            match = curUser.password == psw;
+            match = curUser.password === cryptomd5.CryptoJS.MD5(psw).toString();
+            token = curUser.token;
             status = match ? user_status.EXISTING_USER : user_status.WRONG_PW;
         }
         else // User tried to login again without activating
@@ -202,8 +248,9 @@ function appendNewUserToFireBase()
 	var firebase = getFirebase();
     var users = firebase.getData("users");
     var userIndex =  users.length;
+    var enc_psw = cryptomd5.CryptoJS.MD5(psw).toString();
 
-    var data =  {"token": newToken, "userid": email, "password": psw, "activated": false}
+    var data =  {"token": newToken, "userid": email, "password": enc_psw, "activated": false}
     firebase.putData("users/"+userIndex, data);
    
     return newToken;
