@@ -3,8 +3,7 @@
  *
  * Javascript API hosted and running on "www.scriptr.io" to authenticate "GIFsOnDemand" user.
  * This is called from the Sign up/Sign form and username/password passed as POST paramters to this API.
- * This API verify new userid( email) by sending activation link. Users are added in the Firebase DB
- * once validated.
+ * This API verifies a new userid(email) by sending an activation link to user's email. Once authenticated, users are added in the Firebase DB.
  * Also notify new user registrtion details to the Telegram channel.
  *
  *
